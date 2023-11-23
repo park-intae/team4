@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- NaverUserMapper.xml -->
+<mapper namespace="org.bookbook.mapper.NaverUserMapper">
+
+    <select id="getUserIdByNaverId" resultType="string">
+        SELECT user_id FROM naver_user WHERE naver_id = #{naverId}
+    </select>
+
+    <insert id="insertNaverUser">
+        INSERT INTO naver_user (naver_id, user_id) VALUES (#{naverId}, #{userId})
+    </insert>
+
+</mapper>

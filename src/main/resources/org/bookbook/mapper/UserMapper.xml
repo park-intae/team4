@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.bookbook.mapper.UserMapper">
+
+	<resultMap id="authMap" type="org.bookbook.domain.AuthVO">
+		<result property="userid" column="user_id" />
+		<result property="auth" column="auth" />
+	</resultMap>
+
+	<resultMap id="userMap" type="org.bookbook.domain.UserVO">
+		<id property="userid" column="user_id" />
+		<result property="username" column="username" />
+		<result property="nickname" column="nickname" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="regDate" column="reg_date" />
+		<result property="birth" column="birth" />
+		<result property="gender" column="gender" />
+		<collection property="authList" resultMap="authMap" />
+	</resultMap>
+
+
+
+	<select id="read" resultMap="userMap">
+		SELECT u.user_id, u.username,
+		u.nickname, u.email, u.password,
+		u.reg_date, u.birth, u.gender, a.auth
+		FROM user u
+		LEFT JOIN auth a ON u.user_id = a.user_id
+		WHERE u.user_id =
+		#{userid}
+	</select>
+
+
+ <!-- 모든 사용자 정보를 가져오는 쿼리   -->
+    <select id="getAllUsers" resultMap="userMap">
+        SELECT * FROM user
+    </select>
+
+
+	<insert id="insert" parameterType="org.bookbook.domain.UserVO">
+		INSERT INTO user (user_id,
+		username, nickname, password, email, birth,
+		gender)
+		VALUES (#{userid},
+		#{username}, #{nickname}, #{password}, #{email},
+		#{birth}, #{gender})
+	</insert>
+
+
+	<insert id="insertAuth">
+		insert into auth(user_id, auth)
+		values(#{userid},
+		#{auth})
+	</insert>
+
+
+
+	<!-- <update id="changePassword"> update tbl_users set password = #{encPassword} 
+		where userid = #{userid} </update> -->
+
+	<!-- <update id="updateUser"> update tbl_users set password = #{password}, 
+		email = #{email} where username = #{username} </update> -->
+</mapper>
+
+
+
+
+
+
+
+

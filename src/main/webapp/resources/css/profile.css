@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap');
+body{
+  padding: 0;
+  margin: 0;
+}
+div{
+  box-sizing: border-box;
+}
+
+/* alert badge */
+.circle{
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 2.5px;
+  background-color: #ff0000;
+  position: absolute;
+  top: -5px;
+  left: 110%;
+}
+
+/* 녹색 텍스트 */
+.green{
+  color: #24855b;
+}
+
+.wrap{
+  background-color: #F8F8F8;  
+}
+/* 녹색배경 */
+.greenContainer{  
+  height: 132px;
+  background-color: #24855b;    
+  
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+}
+
+.greenContainer .name{
+   font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+} 
+.greenContainer .modify{
+  margin-left: auto;
+}
+
+
+
+.summaryContainer{
+  background-color: white;  
+  display: flex;  
+  padding: 21px 16px;  
+  height: 90px;
+  margin-bottom: 10px;
+}
+
+.summaryContainer .item{
+  flex-grow: 1
+}
+/* 녹색 숫자 */
+.summaryContainer .number{
+  font-size: 19px;
+  font-weight: bold;
+  color: #24855b;
+}
+/* 텍스트 */
+.summaryContainer .item > div:nth-child(2){
+  font-size: 13px;
+}
+
+
+.listContainer{  
+  padding: 0;
+  background-color: #ffffff;
+  margin-bottom: 10px;
+}
+.listContainer .item{  
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  color: black;
+  text-decoration: none;  
+  height: 56px;
+  box-sizing: border-box;
+}
+.listContainer .icon{  
+  margin-right: 14px;
+}
+.listContainer .text{
+  font-size: 16px;
+  position: relative;
+}
+.listContainer .right{
+  margin-left: auto;
+}
+
+
+
+.listContainer .smallLight{
+  font-size: 14px;
+  color: #c2c2c2;  
+}
+.listContainer .smallLight > span{
+  margin-left: 10px;
+}
+
+.listContainer .right .blct{
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+
+
+.infoContainer{
+  background-color: white; 
+  display: flex;
+  height: 100px;
+  margin-bottom: 10px;    
+}
+
+.infoContainer .item{
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 13px;
+  text-decoration: none;
+  color: black;
+}
+.infoContainer .item > div:first-child{
+  margin-bottom: 2px;
+}
+
+
+
+/*  */
+.listContainer .item:hover{
+/*   background-color: #f8f8f8; */
+}
+.infoContainer .item:hover{
+/*   background-color: #f8f8f8; */
+}
