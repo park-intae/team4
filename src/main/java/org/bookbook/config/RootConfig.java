@@ -29,12 +29,6 @@ public class RootConfig {
 	public DataSource dataSource() {
 		HikariConfig config = new HikariConfig();
 		
-//		config.setDriverClassName("net.sf.log4jdbc.sql.jdbcapi.DriverSpy");
-//		config.setJdbcUrl("jdbc:log4jdbc:mysql://localhost:3306/mini_db"); 
-//		config.setUsername("root");
-//		config.setPassword("root");
-		
-//		jdbc:mysql:49.50.167.140:3306/testdb
 		config.setDriverClassName("net.sf.log4jdbc.sql.jdbcapi.DriverSpy");
 		config.setJdbcUrl("jdbc:log4jdbc:mysql://49.50.167.140:3306/testdb"); 
 		config.setUsername("test-user");

@@ -20,5 +20,9 @@ public class BookVO {
 	private Long isbn;
 	private String genre;
 	private String category;
-	private String Topic;
+	private String topic;
+	private String imageurl;
 }
+
+
+

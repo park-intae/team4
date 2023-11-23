@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BookSearchVO {
-	private String[] Topics;
+	private String[] selectedTopics;
 	private String[] keywords;
 	private String[] bookType;
 	private String[] selectedCategories;
