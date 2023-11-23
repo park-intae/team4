@@ -1,0 +1,31 @@
+#notificationIcon {
+    /* 알림 아이콘 스타일링 */
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+}
+
+#notificationList {
+    /* 알림 목록 스타일링 */
+    list-style-type: none;
+    padding: 0;
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: block; /* 기본적으로 숨김 none;  */
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#notificationList li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+#notificationList li:last-child {
+    border-bottom: none;
+}
