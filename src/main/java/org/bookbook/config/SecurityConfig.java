@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.bookbook.auth.naver.NaverLoginBO;
 import org.bookbook.security.CustomUserDetailsService;
+import org.bookbook.service.NotificationServiceimpl;
 import org.bookbook.sse.SseEmitters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
@@ -31,6 +33,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private DataSource dataSource;
 
+	@Autowired
+	private NotificationServiceimpl notificationService;
+
+	// CustomLoginSuccessHandler Bean 등록
+	@Bean
+	public AuthenticationSuccessHandler customLoginSuccessHandler() {
+		return new CustomLoginSuccessHandler(notificationService);
+	}
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -41,6 +52,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new CustomUserDetailsService();
 	}
 
+	@Bean
+	public SseEmitters sseEmitters() {
+		return new SseEmitters();
+	}
+
+	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		CharacterEncodingFilter filter = new CharacterEncodingFilter();
 		filter.setEncoding("UTF-8");
@@ -50,20 +67,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http.csrf().ignoringAntMatchers("/api/**");
 
-	    http.authorizeRequests()
-	 // 네이버 로그인 관련 URL을 인증 없이 접근 가능하도록 설정
-	    .antMatchers("/naver-login-url", "/callback").permitAll()
-	    .antMatchers("/api/users").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-	    .antMatchers("/security/toggleFollow").authenticated() 
-        .antMatchers("/security/profile").authenticated()
-     
-        .and();
+		http.authorizeRequests()
+				// 네이버 로그인 관련 URL을 인증 없이 접근 가능하도록 설정
+				.antMatchers("/naver-login-url", "/callback").permitAll().antMatchers("/api/users")
+				.hasAnyAuthority("ROLE_ADMIN", "ROLE_USER").antMatchers("/security/toggleFollow").authenticated()
+				.antMatchers("/security/profile").authenticated().antMatchers("/connect", "/sse/*").permitAll()
+
+				.and();
 
 		http.formLogin().usernameParameter("userid") // 사용자 이름 필드를 'userid'로 설정
 				.loginPage("/security/login?error=login_required") // 로그인 안하고 접근한 경우 리다이렉트
 				.loginProcessingUrl("/security/login").defaultSuccessUrl("/") // 로그인 성공시 다음 화면 넘어줄 URL
-				.failureUrl("/security/login?error=true"); // el : param.error
-		
+				.successHandler(customLoginSuccessHandler()).failureUrl("/security/login?error=true"); // el : //
+																										// param.error
 
 		http.logout() // 로그아웃 설정 시작
 				.logoutUrl("/security/logout") // 로그아웃을 수행할 때 POST 요청을 보낼 URL을 설정
@@ -76,14 +92,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.tokenRepository(persistentTokenRepository()) // "remember-me" 토큰의 저장과 검색을 담당하는 리포지토리를 설정
 				.tokenValiditySeconds(3 * 24 * 60 * 60); // "remember-me" 토큰의 유효성 기간을 설정. 3일 동안 유효한 토큰을 설정
 
-		 http.sessionManagement()
-         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-         .invalidSessionUrl("/security/login")
-         .maximumSessions(1)
-         .expiredUrl("/security/login");
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+				.invalidSessionUrl("/security/login").maximumSessions(1).expiredUrl("/security/login");
 	}
-
-
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -107,8 +118,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new NaverLoginBO();
 	}
 
-	@Bean
-	public SseEmitters sseEmitters() {
-	    return new SseEmitters();
-	}
 }

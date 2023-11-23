@@ -1,0 +1,25 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.bookbook.mapper.NotificationMapper">
+
+    <!-- 새로운 알림을 데이터베이스에 추가하는 쿼리 -->
+    <insert id="insertNotification" parameterType="org.bookbook.domain.notification.Notification">
+        INSERT INTO notifications (content, receiver, read_flag)
+        VALUES (#{content}, #{receiver}, #{read})
+    </insert>
+
+    <!-- 특정 사용자의 모든 알림을 조회하는 쿼리 -->
+    <select id="getNotificationsForUser" resultType="org.bookbook.domain.notification.Notification">
+        SELECT id, content, receiver, read_flag
+        FROM notifications
+        WHERE receiver = #{userId}
+    </select>
+
+    <!-- 알림의 읽음 상태를 업데이트하는 쿼리 -->
+    <update id="updateNotificationReadStatus">
+        UPDATE notifications
+        SET read_flag = #{readStatus}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

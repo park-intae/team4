@@ -1,62 +1,46 @@
 package org.bookbook.sse;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.springframework.stereotype.Component;
+import org.bookbook.domain.notification.Notification;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
-@Component
 public class SseEmitters {
 
-    private static final AtomicLong counter = new AtomicLong();
+	private final Map<String, SseEmitter> userEmitters = new ConcurrentHashMap<>();
 
-    private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public SseEmitter add(SseEmitter emitter) {
-        this.emitters.add(emitter);
-        log.info("new emitter added: {}", emitter);
-        log.info("emitter list size: {}", emitters.size());
-        log.info("emitter list: {}", emitters);
-        emitter.onCompletion(() -> {
-            log.info("onCompletion callback");
-            this.emitters.remove(emitter); // 만료되면 리스트에서 삭제
-        });
-        emitter.onTimeout(() -> {
-            log.info("onTimeout callback");
-            emitter.complete();
-        });
+	public void addEmitter(String username, SseEmitter emitter) {
+		userEmitters.put(username, emitter);
+		log.info("사용자 {}의 SSE Emitter가 추가되었습니다. 전체 Emitter 수: {}", username, userEmitters.size());
+	}
 
-        return emitter;
-    }
+	public void removeEmitter(String username) {
+		userEmitters.remove(username);
+		log.info("사용자 {}의 SSE Emitter가 제거되었습니다. 전체 Emitter 수: {}", username, userEmitters.size());
+	}
 
-    
-    public List<SseEmitter> getEmitters() {
-        return this.emitters;
-    }
-    
-    public void count() {
-        long count = counter.incrementAndGet();
-        emitters.forEach(emitter -> {
-            try {
-                emitter.send(SseEmitter.event()
-                        .name("count")
-                        .data(count));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
+	public void sendNotificationToUser(String username, Notification notification) {
+		SseEmitter emitter = userEmitters.get(username);
+		if (emitter != null) {
+			try {
+				String jsonData = objectMapper.writeValueAsString(notification);
+				emitter.send(SseEmitter.event().data(jsonData, MediaType.APPLICATION_JSON));
+				log.info("사용자 {}에게 알림이 전송되었습니다: {}", username, jsonData);
+			} catch (Exception e) {
+				log.error("사용자 {}에게 알림 전송이 실패: {}", username, e);
+			}
+		}
+	}
 
 }
+
 
