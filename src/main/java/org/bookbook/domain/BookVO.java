@@ -10,7 +10,7 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-public class BookVO {
+public class BookVO { // vo is null i dont know why 
 	private int bookid;
 	private String title;
 	private String author;
@@ -21,4 +21,6 @@ public class BookVO {
 	private String genre;
 	private String category;
 	private String Topic;
+	private String imageUrl; // ${book.imageUrl} === Book °´Ã¼ÀÇ getimageUrl()
+	 
 }
