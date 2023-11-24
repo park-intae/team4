@@ -4,55 +4,116 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.bookbook.mapper.BookSearchMapper">
 
-<select id="read" parameterType="org.bookbook.domain.BookSearchVO" resultType="BookVO">
-    SELECT DISTINCT b.*
-    FROM book b
-    JOIN book_keyword bk ON b.book_id = bk.book_id
-    
-	<where>
-	    <if test="bookType != null and bookType.length > 0">
-        AND b.genre IN
-        <foreach item="type" collection="bookType" open="(" separator="," close=")">
-            #{type}
-        </foreach>
-    </if>
+	<select id="read"
+		parameterType="org.bookbook.domain.BookSearchVO" resultType="BookVO">
+		SELECT DISTINCT b.*
+		FROM book b
+		JOIN book_keyword bk ON b.book_id =
+		bk.book_id
 
-    
-	<if test="selectedCategories != null and selectedCategories.length > 0">
-	    AND b.category IN
-	    <foreach item="type" collection="selectedCategories" open="(" separator="," close=")">
-	        #{type}
-	    </foreach>
-	</if>
-    
-	<if test="Topics != null and Topics.length > 0">
-	    AND b.Topic IN
-	    <foreach item="type" collection="Topics" open="(" separator="," close=")">
-	        #{type}
-	    </foreach>
-	</if>
-	    
-    <if test="keywords != null and keywords.length > 0">
-        AND (
-            <foreach item="keyword" collection="keywords" separator="AND">
-                bk.keywords LIKE CONCAT('%', #{keyword}, '%')
-            </foreach>
-        )
-    </if>
-	</where>
-	
-        LIMIT 100
-	
-</select>
+		<where>
+			<if test="bookType != null and bookType.length > 0">
+				AND b.genre IN
+				<foreach item="type" collection="bookType" open="("
+					separator="," close=")">
+					#{type}
+				</foreach>
+			</if>
 
 
-<select id="getTopic" resultType="TopicVO">
-SELECT * from book_topics;
-</select>
+			<if
+				test="selectedCategories != null and selectedCategories.length > 0">
+				AND b.category IN
+				<foreach item="type" collection="selectedCategories"
+					open="(" separator="," close=")">
+					#{type}
+				</foreach>
+			</if>
 
-<select id="getGenre" resultType="GenreVO">
-SELECT * from book_genres;
-</select>
+			<if test="Topics != null and Topics.length > 0">
+				AND b.Topic IN
+				<foreach item="type" collection="Topics" open="("
+					separator="," close=")">
+					#{type}
+				</foreach>
+			</if>
 
+			<if test="keywords != null and keywords.length > 0">
+				AND (
+				<foreach item="keyword" collection="keywords"
+					separator="AND">
+					bk.keywords LIKE CONCAT('%', #{keyword}, '%')
+				</foreach>
+				)
+			</if>
+		</where>
+
+		LIMIT 100
+
+	</select>
+
+
+	<select id="getTopic" resultType="TopicVO">
+		SELECT * from book_topics;
+	</select>
+
+	<select id="getGenre" resultType="GenreVO">
+		SELECT * from book_genres;
+	</select>
+
+	<select id="getListPaging" resultType="BookVO">
+		SELECT b.book_id, b.title, b.author, b.publisher, b.genre, b.category,
+		b.Topic, bi.image_url FROM book b
+		INNER JOIN book_image bi
+		ON b.book_id
+		= bi.book_id
+		<where>
+			<!-- Dynamic conditions for bookType -->
+			<if test="bookType != null and bookType.length > 0">
+				AND b.genre IN
+				<foreach item="type" collection="bookType" open="("
+					separator="," close=")">
+					#{type}
+				</foreach>
+			</if>
+
+			<!-- Dynamic conditions for selectedCategories -->
+			<if
+				test="selectedCategories != null and selectedCategories.length > 0">
+				AND b.category IN
+				<foreach item="category" collection="selectedCategories"
+					open="(" separator="," close=")">
+					#{category}
+				</foreach>
+			</if>
+
+			<!-- Dynamic conditions for Topics -->
+			<if test="topics != null and topics.length > 0">
+				AND b.Topic IN
+				<foreach item="topic" collection="topics" open="("
+					separator="," close=")">
+					#{topic}
+				</foreach>
+			</if>
+
+			<!-- Dynamic conditions for keywords -->
+			<if test="keywords != null and keywords.length > 0">
+				AND (
+				<foreach item="keyword" collection="keywords"
+					separator="AND">
+					bk.keywords LIKE CONCAT('%', #{keyword}, '%')
+				</foreach>
+				)
+			</if>
+		</where>
+		limit
+		#{skip},#{amount}
+		
+	</select>
+
+	<!-- 게시물 총 개숫 -->
+	<select id="getTotal" resultType="int">
+		select count(*) from book
+	</select>
 
 </mapper>
